@@ -1,10 +1,14 @@
+import LoginForm from "./login-form";
 import AuthHeader from "../auth-header";
-import ToggleTheme from "@/components/theme-toggle";
 
 export default function LoginPage() {
   return (
-    <main className="bg-background">
-      <AuthHeader />
+    <main className="grid min-h-screen lg:grid-cols-[40%_60%]">
+      <div className="bg-background flex flex-col">
+        <AuthHeader />
+        <LoginForm />
+      </div>
+      <div className="bg-muted hidden lg:block" />
     </main>
   );
 }

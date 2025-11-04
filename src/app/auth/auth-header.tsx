@@ -3,9 +3,12 @@ import ThemeToggle from "@/components/theme-toggle";
 
 export default function AuthHeader() {
   return (
-    <header className="flex justify-between flex-row w-full p-6">
-      <div className="bg-primary items-center justify-center flex h-6 w-6 rounded-full">
-        <Nut className="size-4 text-primary-foreground" />
+    <header className="flex w-full flex-row justify-between p-10">
+      <div className="flex flex-row gap-2">
+        <div className="bg-primary flex h-6 w-6 items-center justify-center rounded-full">
+          <Nut className="text-primary-foreground size-4" />
+        </div>
+        <p className="font-medium">Acorn</p>
       </div>
       <ThemeToggle />
     </header>
