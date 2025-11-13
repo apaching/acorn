@@ -13,12 +13,12 @@ import {
   SidebarMenuButton,
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
-import { Nut } from "lucide-react";
+import { icons, Nut } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarImage } from "./ui/avatar";
-import { Settings, CreditCard, LayoutDashboard } from "lucide-react";
 import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
+import { Settings, CreditCard, LayoutDashboard, BarChart3 } from "lucide-react";
 
 export const sidebarItems = [
   {
@@ -30,6 +30,11 @@ export const sidebarItems = [
     title: "Transactions",
     url: "/dashboard/transactions",
     icon: CreditCard,
+  },
+  {
+    title: "Analytics",
+    url: "/dashboard/transactions",
+    icon: BarChart3,
   },
   {
     title: "Settings",
@@ -61,19 +66,6 @@ export function ApplicationSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {/* {sidebarItems.map((item, index) => (
-                <SidebarMenuItem key={index}>
-                  <SidebarMenuButton asChild>
-                    <Link
-                      href={item.url}
-                      className="flex flex-row items-center gap-2"
-                    >
-                      <item.icon className="text-muted-foreground" />
-                      <p className="text-sm font-medium">{item.title}</p>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))} */}
               {sidebarItems.map((item, index) => (
                 <Collapsible key={index} asChild className="group/collapsible">
                   <SidebarMenuItem>
@@ -116,54 +108,3 @@ export function ApplicationSidebar() {
     </Sidebar>
   );
 }
-
-/**
-    <Sidebar>
-      <SidebarHeader>
-        <div className="flex items-center gap-4 rounded-md p-4">
-          <div className="bg-primary flex aspect-square size-10 items-center justify-center rounded-full">
-            <Nut className="text-primary-foreground size-6" />
-          </div>
-          <div className="grid flex-1 text-left leading-tight">
-            <span className="truncate text-lg font-bold">Acorn</span>
-            <span className="text-muted-foreground text-xs">
-              Expense Tracker
-            </span>
-          </div>
-        </div>
-      </SidebarHeader>
-      <Separator className="my-2" />
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {sidebarItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link
-                      href={item.url}
-                      className="flex items-center gap-3 px-3 py-2"
-                    >
-                      <item.icon className="text-muted-foreground" />
-                      <span className="text-sm font-medium">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <div className="flex items-center gap-3 px-3 py-2 hover:cursor-pointer">
-                <span>Logout</span>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar> 
- */

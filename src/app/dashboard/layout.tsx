@@ -1,9 +1,6 @@
+import ApplicationHeader from "@/components/application-header";
 import { ApplicationSidebar } from "@/components/application-sidebar";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function DashboardLayout({
   children,
@@ -12,6 +9,7 @@ export default function DashboardLayout({
     <SidebarProvider>
       <ApplicationSidebar />
       <SidebarInset>
+        <ApplicationHeader />
         <main>{children}</main>
       </SidebarInset>
     </SidebarProvider>
