@@ -69,17 +69,15 @@ export function ApplicationSidebar() {
               {sidebarItems.map((item, index) => (
                 <Collapsible key={index} asChild className="group/collapsible">
                   <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton asChild>
-                        <Link
-                          href={item.url}
-                          className="flex flex-row items-center gap-3"
-                        >
-                          <item.icon className="text-muted-foreground" />
-                          <p className="text-sm font-medium">{item.title}</p>
-                        </Link>
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
+                    <SidebarMenuButton tooltip={item.title} asChild>
+                      <Link
+                        href={item.url}
+                        className="flex flex-row items-center gap-3"
+                      >
+                        <item.icon className="text-muted-foreground" />
+                        <p className="text-sm font-medium">{item.title}</p>
+                      </Link>
+                    </SidebarMenuButton>
                   </SidebarMenuItem>
                 </Collapsible>
               ))}
