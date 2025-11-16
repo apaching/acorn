@@ -12,6 +12,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarGroupContent,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { icons, Nut } from "lucide-react";
 import { Separator } from "./ui/separator";
@@ -33,7 +34,7 @@ export const sidebarItems = [
   },
   {
     title: "Analytics",
-    url: "/dashboard/transactions",
+    url: "/dashboard/analytics",
     icon: BarChart3,
   },
   {
@@ -45,6 +46,11 @@ export const sidebarItems = [
 
 export function ApplicationSidebar() {
   const router = useRouter();
+  const { isMobile, toggleSidebar } = useSidebar();
+
+  const handleMobileTabClick = () => {
+    isMobile ?? toggleSidebar();
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -72,6 +78,7 @@ export function ApplicationSidebar() {
                     <SidebarMenuButton tooltip={item.title} asChild>
                       <Link
                         href={item.url}
+                        onClick={handleMobileTabClick}
                         className="flex flex-row items-center gap-3"
                       >
                         <item.icon className="text-muted-foreground" />
