@@ -14,34 +14,58 @@ export type Database = {
   }
   public: {
     Tables: {
+      budgets: {
+        Row: {
+          amount_limit: number | null
+          created_at: string
+          id: number
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount_limit?: number | null
+          created_at?: string
+          id?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount_limit?: number | null
+          created_at?: string
+          id?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number | null
           created_at: string
-          date: string | null
           id: string
           note: string | null
-          type: string | null
+          transaction_date: string | null
+          type: Database["public"]["Enums"]["transaction_type"] | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
           amount?: number | null
           created_at?: string
-          date?: string | null
           id?: string
           note?: string | null
-          type?: string | null
+          transaction_date?: string | null
+          type?: Database["public"]["Enums"]["transaction_type"] | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
           amount?: number | null
           created_at?: string
-          date?: string | null
           id?: string
           note?: string | null
-          type?: string | null
+          transaction_date?: string | null
+          type?: Database["public"]["Enums"]["transaction_type"] | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -49,26 +73,29 @@ export type Database = {
       }
       user_preferences: {
         Row: {
+          color_theme: string | null
           created_at: string
           currency: string | null
           id: string
-          theme: string | null
+          mode_theme: string | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          color_theme?: string | null
           created_at?: string
           currency?: string | null
           id?: string
-          theme?: string | null
+          mode_theme?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          color_theme?: string | null
           created_at?: string
           currency?: string | null
           id?: string
-          theme?: string | null
+          mode_theme?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -82,6 +109,7 @@ export type Database = {
           last_name: string | null
           profile_picture: string | null
           updated_at: string | null
+          user_type: Database["public"]["Enums"]["user_type"] | null
         }
         Insert: {
           created_at?: string
@@ -90,6 +118,7 @@ export type Database = {
           last_name?: string | null
           profile_picture?: string | null
           updated_at?: string | null
+          user_type?: Database["public"]["Enums"]["user_type"] | null
         }
         Update: {
           created_at?: string
@@ -98,6 +127,7 @@ export type Database = {
           last_name?: string | null
           profile_picture?: string | null
           updated_at?: string | null
+          user_type?: Database["public"]["Enums"]["user_type"] | null
         }
         Relationships: []
       }
@@ -109,7 +139,18 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      color_theme:
+        | "green"
+        | "white"
+        | "blue"
+        | "orange"
+        | "red"
+        | "rose"
+        | "violet"
+        | "yellow"
+      mode_theme: "dark" | "light" | "system"
+      transaction_type: "income" | "expense"
+      user_type: "user" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -236,6 +277,20 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      color_theme: [
+        "green",
+        "white",
+        "blue",
+        "orange",
+        "red",
+        "rose",
+        "violet",
+        "yellow",
+      ],
+      mode_theme: ["dark", "light", "system"],
+      transaction_type: ["income", "expense"],
+      user_type: ["user", "admin"],
+    },
   },
 } as const
