@@ -1,3 +1,5 @@
+"use client";
+
 import ThemeToggle from "./theme-toggle";
 import {
   Breadcrumb,
@@ -7,30 +9,59 @@ import {
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
 import { Separator } from "./ui/separator";
+import { usePathname } from "next/navigation";
 import { SidebarTrigger } from "./ui/sidebar";
+import React from "react";
+import capitalizeFirstLetter from "@/utils/string-utils";
+
+const routeData: Record<string, { label: string; description: string }> = {
+  transactions: {
+    label: "Transactions",
+    description:
+      "View and manage all your financial transactions. Track your income, and expenses organized by category.",
+  },
+};
 
 export default function ApplicationHeader() {
+  const pathName = usePathname();
+
+  const segments = pathName?.split("/").filter(Boolean);
+
+  const lastSegment = pathName?.split("/").filter(Boolean).pop();
+  const currentRouteData = lastSegment ? routeData[lastSegment] : undefined;
+
   return (
-    <header className="flex h-12 w-full shrink-0 items-center justify-between px-2">
-      <div className="flex items-center gap-2">
-        <SidebarTrigger />
-        <Separator
-          orientation="vertical"
-          className="mr-2 data-[orientation=vertical]:h-4"
-        />
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbPage>Route</BreadcrumbPage>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Description here</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+    <div className="mb-6 flex w-full flex-col">
+      <header className="flex h-12 w-full shrink-0 items-center justify-between px-4">
+        <div className="flex items-center gap-2">
+          <SidebarTrigger />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+          <Breadcrumb>
+            <BreadcrumbList>
+              {segments.map((segment, index) => (
+                <React.Fragment key={index}>
+                  {index > 0 && <BreadcrumbSeparator />}
+
+                  <BreadcrumbItem>
+                    <BreadcrumbPage className="text-xs sm:text-[14px]">
+                      {capitalizeFirstLetter(segment)}
+                    </BreadcrumbPage>
+                  </BreadcrumbItem>
+                </React.Fragment>
+              ))}
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </header>
+      <div className="flex flex-col px-4">
+        <h1 className="text-primary text-2xl font-bold">
+          {currentRouteData?.label}
+        </h1>
+        <p className="text-sm">{currentRouteData?.description}</p>
       </div>
-      <ThemeToggle />
-    </header>
+    </div>
   );
 }

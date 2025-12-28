@@ -10,7 +10,6 @@ export default function AuthHeader() {
         </div>
         <p className="font-medium">Acorn</p>
       </div>
-      <ThemeToggle />
     </header>
   );
 }

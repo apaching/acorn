@@ -41,9 +41,10 @@ export type Database = {
       transactions: {
         Row: {
           amount: number | null
+          category: string | null
           created_at: string
+          description: string | null
           id: string
-          note: string | null
           transaction_date: string | null
           type: Database["public"]["Enums"]["transaction_type"] | null
           updated_at: string | null
@@ -51,9 +52,10 @@ export type Database = {
         }
         Insert: {
           amount?: number | null
+          category?: string | null
           created_at?: string
+          description?: string | null
           id?: string
-          note?: string | null
           transaction_date?: string | null
           type?: Database["public"]["Enums"]["transaction_type"] | null
           updated_at?: string | null
@@ -61,9 +63,10 @@ export type Database = {
         }
         Update: {
           amount?: number | null
+          category?: string | null
           created_at?: string
+          description?: string | null
           id?: string
-          note?: string | null
           transaction_date?: string | null
           type?: Database["public"]["Enums"]["transaction_type"] | null
           updated_at?: string | null
@@ -105,28 +108,28 @@ export type Database = {
         Row: {
           created_at: string
           first_name: string | null
-          id: string
           last_name: string | null
           profile_picture: string | null
           updated_at: string | null
+          user_id: string
           user_type: Database["public"]["Enums"]["user_type"] | null
         }
         Insert: {
           created_at?: string
           first_name?: string | null
-          id: string
           last_name?: string | null
           profile_picture?: string | null
           updated_at?: string | null
+          user_id: string
           user_type?: Database["public"]["Enums"]["user_type"] | null
         }
         Update: {
           created_at?: string
           first_name?: string | null
-          id?: string
           last_name?: string | null
           profile_picture?: string | null
           updated_at?: string | null
+          user_id?: string
           user_type?: Database["public"]["Enums"]["user_type"] | null
         }
         Relationships: []

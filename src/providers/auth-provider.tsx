@@ -1,7 +1,7 @@
 "use client";
 
 import { supabase } from "@/utils/supabase/client";
-import { UserPreferences, UserProfile } from "@/types/types";
+import { UserPreference, UserProfile } from "@/types/types";
 import { SignUpFormData } from "@/app/auth/signup/signup-form";
 import { createContext, Dispatch, useEffect, useState } from "react";
 import { SignInFormData } from "@/app/auth/signin/signin-form";
@@ -9,7 +9,7 @@ import { SignInFormData } from "@/app/auth/signin/signin-form";
 
 type AuthContextType = {
   userProfile: UserProfile | null;
-  userPreferences: UserPreferences | null;
+  userPreferences: UserPreference | null;
   loading: boolean;
   setLoading: Dispatch<React.SetStateAction<boolean>>
   signUp: (formData: SignUpFormData) => Promise<void>;
@@ -24,7 +24,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null);
+  const [userPreferences, setUserPreferences] = useState<UserPreference | null>(null);
 
   async function signUp(formData: SignUpFormData) {
     const { error } = await supabase.auth.signUp({

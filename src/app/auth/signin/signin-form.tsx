@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import showToast from "@/lib/toast";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import showToast from "@/lib/toast";
 
 export type SignInFormData = {
   email: string;
@@ -97,7 +98,10 @@ export default function SignInForm() {
           </div>
         </div>
         <div className="flex flex-col items-center space-y-4">
-          <Button className="w-full">Sign In</Button>
+          <Button variant={loading ? "loading" : "default"} className="w-full">
+            {loading && <Loader2 className="animate-spin" />}
+            {loading ? "Signing In..." : "Sign In"}
+          </Button>
           <p className="text-sm">
             Don't have an account?{" "}
             <Link
