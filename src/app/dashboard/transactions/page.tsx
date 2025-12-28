@@ -5,7 +5,7 @@ import { transactionColumns } from "./columns";
 import useTransaction from "@/hooks/use-transaction";
 import CustomSelect from "@/components/custom-select";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Pencil, PencilLine, Plus } from "lucide-react";
 
 export default function TransactionsHistoryPage() {
   const { useListTransactions } = useTransaction();
@@ -13,7 +13,7 @@ export default function TransactionsHistoryPage() {
   const { data: transactions, isLoading, isError } = useListTransactions();
 
   return (
-    <div className="bg- relative h-full space-y-4 px-4 py-2 sm:py-4">
+    <div className="relative h-full space-y-4 px-4 py-2 sm:py-4">
       <div className="flex flex-row items-center justify-between">
         <div className="flex w-full flex-row space-x-4">
           <div className="flex w-full flex-col space-y-2 sm:max-w-[180px]">
@@ -39,8 +39,11 @@ export default function TransactionsHistoryPage() {
         </Button>
       </div>
       <DataTable data={transactions || []} columns={transactionColumns} />
-      <Button className="absolute right-0 bottom-0 flex h-8 w-8 rounded-full sm:hidden">
-        <Plus />
+      <Button className="absolute right-6 bottom-6 z-50 flex h-10 w-10 rounded-full sm:hidden">
+        <PencilLine
+          strokeWidth={2.5}
+          className="text-primary-foreground h-8 w-8"
+        />
       </Button>
     </div>
   );

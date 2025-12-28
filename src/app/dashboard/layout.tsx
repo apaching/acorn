@@ -10,7 +10,7 @@ export default function DashboardLayout({
       <ApplicationSidebar />
       <SidebarInset>
         <ApplicationHeader />
-        <main className="overflow flex-1">{children}</main>
+        <main className="h-full overflow-hidden">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );
