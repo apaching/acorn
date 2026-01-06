@@ -1,7 +1,7 @@
 import { useCallback } from "react";
-import { Transaction } from "@/types/types";
 import { supabase } from "@/utils/supabase/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Transaction, TransactionInsert } from "@/types/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function useTransaction() {
   const queryClient = useQueryClient();
@@ -16,7 +16,7 @@ export default function useTransaction() {
     return supabase;
   }, []);
 
-  const useListTransactions = () => {
+  const listTransactions = () => {
     return useQuery({
       queryKey: ["transactions"],
       queryFn: async () => {
@@ -26,7 +26,7 @@ export default function useTransaction() {
           .from("transactions")
           .select("*")
           .eq("user_id", "31d9fb33-835e-4dc5-8a01-05df3309ab14")
-          .order("transaction_date");
+          .order("transaction_date", { ascending: false });
 
         if (error) throw error;
 
@@ -35,7 +35,29 @@ export default function useTransaction() {
     });
   };
 
+  const createTransaction = () => {
+    return useMutation({
+      mutationFn: async (transaction: TransactionInsert) => {
+        const supabaseClient = assertClient();
+
+        const { data, error } = await supabaseClient
+          .from("transactions")
+          .insert(transaction)
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        return data as Transaction;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      },
+    });
+  };
+
   return {
-    useListTransactions,
+    listTransactions,
+    createTransaction,
   };
 }

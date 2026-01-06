@@ -43,8 +43,8 @@ export type Database = {
           amount: number | null
           category: string | null
           created_at: string
-          description: string | null
           id: string
+          note: string | null
           transaction_date: string | null
           type: Database["public"]["Enums"]["transaction_type"] | null
           updated_at: string | null
@@ -54,8 +54,8 @@ export type Database = {
           amount?: number | null
           category?: string | null
           created_at?: string
-          description?: string | null
           id?: string
+          note?: string | null
           transaction_date?: string | null
           type?: Database["public"]["Enums"]["transaction_type"] | null
           updated_at?: string | null
@@ -65,8 +65,8 @@ export type Database = {
           amount?: number | null
           category?: string | null
           created_at?: string
-          description?: string | null
           id?: string
+          note?: string | null
           transaction_date?: string | null
           type?: Database["public"]["Enums"]["transaction_type"] | null
           updated_at?: string | null
@@ -152,6 +152,19 @@ export type Database = {
         | "violet"
         | "yellow"
       mode_theme: "dark" | "light" | "system"
+      transaction_category:
+        | "salary"
+        | "allowance"
+        | "side_income"
+        | "business"
+        | "foods_and_drinks"
+        | "transport"
+        | "groceries"
+        | "bills"
+        | "luxury"
+        | "healthcare"
+        | "income_others"
+        | "expense_others"
       transaction_type: "income" | "expense"
       user_type: "user" | "admin"
     }
@@ -292,6 +305,20 @@ export const Constants = {
         "yellow",
       ],
       mode_theme: ["dark", "light", "system"],
+      transaction_category: [
+        "salary",
+        "allowance",
+        "side_income",
+        "business",
+        "foods_and_drinks",
+        "transport",
+        "groceries",
+        "bills",
+        "luxury",
+        "healthcare",
+        "income_others",
+        "expense_others",
+      ],
       transaction_type: ["income", "expense"],
       user_type: ["user", "admin"],
     },

@@ -19,11 +19,15 @@ import {
 interface DataTableProps<TData, TValue> {
   data: TData[];
   columns: ColumnDef<TData, TValue>[];
+  isError: boolean;
+  isLoading: boolean;
 }
 
 export function DataTable<TData, Tvalue>({
   data,
   columns,
+  isError,
+  isLoading,
 }: DataTableProps<TData, Tvalue>) {
   const table = useReactTable({
     data,

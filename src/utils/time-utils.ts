@@ -19,3 +19,15 @@ export function formatDateShort(isoDate: string) {
     year: "numeric",
   }).format(new Date(isoDate));
 }
+
+/**
+ *
+ */
+export function combineDateAndTime(date: Date, time: string) {
+  const [hours, minutes, seconds = "0"] = time.split(":");
+
+  const combined = new Date(date);
+  combined.setHours(Number(hours), Number(minutes), Number(seconds), 0);
+
+  return combined.toISOString();
+}

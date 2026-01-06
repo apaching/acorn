@@ -4,6 +4,7 @@ import { Transaction } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDateShort } from "@/utils/time-utils";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import { allCategoriesRecord } from "@/constants/constants";
 
 export const transactionColumns: ColumnDef<Transaction>[] = [
   {
@@ -34,6 +35,11 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "category",
     header: "Category",
+    cell: ({ getValue }) => {
+      const category = getValue<string>();
+
+      return <div> {allCategoriesRecord[category]?.label ?? category}</div>;
+    },
   },
   {
     accessorKey: "transaction_date",
@@ -49,7 +55,7 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
     },
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "note",
+    header: "Note",
   },
 ];

@@ -1,70 +1,120 @@
 import {
   Gem,
-  Settings,
   Utensils,
   Ambulance,
   PiggyBank,
   HandCoins,
   CircleHelp,
-  CreditCard,
+  LucideIcon,
   ReceiptText,
   ShoppingCart,
   CarTaxiFront,
-  LayoutDashboard,
   BanknoteArrowUp,
   BriefcaseBusiness,
 } from "lucide-react";
 
-export const incomingCategories = [
+export type CategoryOption = {
+  label: string;
+  value: string;
+  icon?: LucideIcon;
+};
+
+export const transactionTypes = [
   {
-    category: "Salary",
+    label: "All",
+    value: "all",
+  },
+  {
+    label: "Income",
+    value: "income",
+  },
+  {
+    label: "Expense",
+    value: "expense",
+  },
+];
+
+export const incomeCategories = [
+  {
+    label: "All",
+    value: "all_income",
+  },
+  {
+    label: "Salary",
+    value: "salary",
     icon: HandCoins,
   },
   {
-    category: "Allowance",
+    label: "Allowance",
+    value: "allowance",
     icon: PiggyBank,
   },
   {
-    category: "Side Income",
+    label: "Side Income",
+    value: "side_income",
     icon: BanknoteArrowUp,
   },
   {
-    category: "Business",
+    label: "Business",
+    value: "business",
     icon: BriefcaseBusiness,
   },
   {
-    category: "Others",
+    label: "Others",
+    value: "income_others",
     icon: CircleHelp,
   },
 ];
 
-export const outgoingCategories = [
+export const expenseCategories = [
   {
-    category: "Foods & Drinks",
+    label: "All",
+    value: "all_expense",
+  },
+  {
+    label: "Foods & Drinks",
+    value: "foods_and_drinks",
     icon: Utensils,
   },
   {
-    category: "Transport",
+    label: "Transport",
+    value: "transport",
     icon: CarTaxiFront,
   },
   {
-    category: "Groceries",
+    label: "Groceries",
+    value: "groceries",
     icon: ShoppingCart,
   },
   {
-    category: "Bills",
+    label: "Bills",
+    value: "bills",
     icon: ReceiptText,
   },
   {
-    category: "Luxury",
+    label: "Luxury",
+    value: "luxury",
     icon: Gem,
   },
   {
-    category: "Healthcare",
+    label: "Healthcare",
+    value: "healthcare",
     icon: Ambulance,
   },
   {
-    category: "Others",
+    label: "Others",
+    value: "expense_others",
     icon: CircleHelp,
   },
 ];
+
+export const allCategoriesRecord: Record<string, CategoryOption> = [
+  ...incomeCategories,
+  ...expenseCategories,
+].reduce(
+  (acc, category) => {
+    acc[category.value] = category;
+    return acc;
+  },
+  {} as Record<string, CategoryOption>,
+);

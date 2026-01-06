@@ -2,31 +2,50 @@ import {
   Select,
   SelectItem,
   SelectValue,
-  SelectLabel,
   SelectContent,
   SelectTrigger,
 } from "@/components/ui/select";
+import { LucideIcon } from "lucide-react";
+import { Dispatch } from "react";
+
+interface SelectOption {
+  label: string;
+  value: string;
+  icon?: LucideIcon;
+}
 
 interface CustomSelectProps {
+  items: SelectOption[];
+  selectedValue: string;
+  onSelect: (value: string) => void;
+  placeholder?: string;
   selectTriggerClassname?: string;
-  placeholder: string;
-  onSelect: () => void;
+  isDisabled?: boolean;
 }
 
 export default function CustomSelect({
-  selectTriggerClassname,
-  placeholder,
+  items,
+  selectedValue,
   onSelect,
+  placeholder,
+  selectTriggerClassname,
+  isDisabled,
 }: CustomSelectProps) {
   return (
-    <Select>
+    <Select
+      value={selectedValue}
+      onValueChange={onSelect}
+      disabled={isDisabled}
+    >
       <SelectTrigger className={`${selectTriggerClassname}`}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="light">Light</SelectItem>
-        <SelectItem value="dark">Dark</SelectItem>
-        <SelectItem value="system">System</SelectItem>
+        {items.map((item, index) => (
+          <SelectItem key={index} value={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );
