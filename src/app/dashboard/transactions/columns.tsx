@@ -57,5 +57,14 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "note",
     header: "Note",
+    cell: ({ getValue }) => {
+      const note = getValue<string>();
+
+      return (
+        <div className="flex max-w-32 items-center">
+          <p className="truncate">{note}</p>
+        </div>
+      );
+    },
   },
 ];

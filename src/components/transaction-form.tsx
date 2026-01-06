@@ -74,6 +74,7 @@ export function TransactionForm({
   const typeValue = watch("type");
   const categoryValue = watch("category");
   const dateValue = watch("date");
+  const noteLength = watch("note").length;
 
   const transactionTypeOptions = transactionTypes.filter(
     (t) => t.value != "all",
@@ -234,13 +235,16 @@ export function TransactionForm({
                 />
               </div>
             </div>
-            <div className="grid gap-2">
+            <div className="flex flex-col gap-2">
               <Label>Note</Label>
               <Textarea
-                maxLength={250}
+                maxLength={32}
                 placeholder="Add an optional note."
                 {...register("note")}
               />
+              <p className="text-muted-foreground self-end text-xs">
+                {noteLength} / 32
+              </p>
             </div>
           </div>
           <DialogFooter className="mt-8 flex flex-row">

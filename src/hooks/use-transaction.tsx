@@ -50,9 +50,40 @@ export default function useTransaction() {
 
         return data as Transaction;
       },
-      onSuccess: () => {
+      onMutate: async (newTransaction) => {
+        await queryClient.cancelQueries({ queryKey: ["transactions"] });
+
+        const previousTransactions = queryClient.getQueryData<Transaction[]>([
+          "transactions",
+        ]);
+
+        queryClient.setQueryData<Transaction[]>(
+          ["transactions"],
+          (old = []) => [
+            {
+              ...newTransaction,
+              id: crypto.randomUUID(),
+              created_at: new Date().toISOString(),
+            } as Transaction,
+            ...old,
+          ],
+        );
+
+        return { previousTransactions };
+      },
+      onError: (_err, _newTransaction, context) => {
+        queryClient.setQueryData(
+          ["transactions"],
+          context?.previousTransactions,
+        );
+      },
+      onSettled: () => {
         queryClient.invalidateQueries({ queryKey: ["transactions"] });
       },
+
+      // onSuccess: () => {
+      //   queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      // },
     });
   };
 
