@@ -15,6 +15,7 @@ import {
   TableHead,
   TableHeader,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   data: TData[];
@@ -32,18 +33,44 @@ export function DataTable<TData, Tvalue>({
   const table = useReactTable({
     data,
     columns,
+    initialState: {
+      columnPinning: {
+        right: ["action_buttons"],
+      },
+    },
     getCoreRowModel: getCoreRowModel(),
   });
 
   return (
-    <div className="h-full overflow-hidden rounded-md">
-      <Table>
+    <div className="relative h-full overflow-x-auto rounded-md">
+      <Table className="table-auto">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
+                const isPinned = header.column.getIsPinned();
+
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    style={{
+                      left:
+                        isPinned === "left"
+                          ? header.column.getStart("left")
+                          : undefined,
+                      right:
+                        isPinned === "right"
+                          ? header.column.getAfter("right")
+                          : undefined,
+                      minWidth: header.column.columnDef.minSize ?? 16,
+                      maxWidth: header.column.columnDef.maxSize ?? 200,
+                      width: header.column.columnDef.size ?? "auto",
+                    }}
+                    className={cn(
+                      isPinned ? 30 : 0,
+                      isPinned ? "bg-background sticky" : "relative",
+                    )}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -63,11 +90,40 @@ export function DataTable<TData, Tvalue>({
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const isPinned = cell.column.getIsPinned();
+
+                  return (
+                    <TableCell
+                      key={cell.id}
+                      style={{
+                        left:
+                          isPinned === "left"
+                            ? cell.column.getStart("left")
+                            : undefined,
+                        right:
+                          isPinned === "right"
+                            ? cell.column.getAfter("right")
+                            : undefined,
+                        minWidth: cell.column.columnDef.minSize ?? 16,
+                        maxWidth: cell.column.columnDef.maxSize ?? 200,
+                        width: cell.column.columnDef.size ?? "auto",
+                      }}
+                      className={cn(
+                        isPinned ? 20 : 0,
+                        "overflow-hidden text-nowrap text-ellipsis",
+                        isPinned
+                          ? "from-background via-background sticky bg-linear-to-l to-transparent"
+                          : "relative",
+                      )}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             ))
           ) : (

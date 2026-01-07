@@ -5,7 +5,7 @@ import {
   incomeCategories,
   transactionTypes,
 } from "@/constants/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DataTable } from "./data-table";
 import { transactionColumns } from "./columns";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,17 @@ export default function TransactionsHistoryPage() {
   };
 
   const handleCategorySelect = () => {};
+
+  useEffect(() => {
+    console.log(transactions);
+  }, [transactions]);
+
+  const filteredTransactions =
+    transactionType === "all"
+      ? transactions
+      : transactions?.filter(
+          (transaction) => transaction.type === transactionType,
+        );
 
   return (
     <div className="relative h-full space-y-4 px-4 py-2 sm:py-4">
@@ -63,7 +74,7 @@ export default function TransactionsHistoryPage() {
         </div>
         <Button
           onClick={() => setIsOpen((prev) => !prev)}
-          className="hidden h-8 w-8 rounded-full sm:flex sm:w-auto sm:rounded-md"
+          className="hidden h-8 w-8 rounded-full hover:cursor-pointer sm:flex sm:w-auto sm:rounded-md"
         >
           <Plus />
           <p className="hidden sm:block">Add Transaction</p>
@@ -73,14 +84,14 @@ export default function TransactionsHistoryPage() {
       <DataTable
         isError={isError}
         isLoading={isLoading}
-        data={transactions || []}
+        data={filteredTransactions || []}
         columns={transactionColumns}
       />
 
       {/* PC - Floating Action Button */}
       <Button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="absolute right-4 bottom-2 z-50 flex h-10 w-10 rounded-full sm:hidden"
+        className="absolute right-4 bottom-2 z-50 flex h-10 w-10 rounded-full hover:cursor-pointer sm:hidden"
       >
         <PencilLine
           strokeWidth={2}

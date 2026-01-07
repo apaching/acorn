@@ -3,13 +3,14 @@
 import { Transaction } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDateShort } from "@/utils/time-utils";
-import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { allCategoriesRecord } from "@/constants/constants";
+import { ArrowDownLeft, ArrowUpRight, MoreVertical } from "lucide-react";
 
 export const transactionColumns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "type",
     header: "Type",
+    size: 24,
     cell: ({ getValue }) => {
       const type = getValue();
 
@@ -31,10 +32,12 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "amount",
     header: "Amount",
+    size: 24,
   },
   {
     accessorKey: "category",
     header: "Category",
+    size: 24,
     cell: ({ getValue }) => {
       const category = getValue<string>();
 
@@ -44,6 +47,7 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "transaction_date",
     header: "Date",
+    size: 16,
     cell: ({ getValue }) => {
       const date = getValue<string>();
 
@@ -61,8 +65,18 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
       const note = getValue<string>();
 
       return (
-        <div className="flex max-w-32 items-center">
-          <p className="truncate">{note}</p>
+        <div className="flex w-auto max-w-40 items-center overflow-y-auto">
+          <p>{note}</p>
+        </div>
+      );
+    },
+  },
+  {
+    id: "action_buttons",
+    cell: ({ row }) => {
+      return (
+        <div>
+          <MoreVertical className="text-primary hover:cursor-pointer" />
         </div>
       );
     },

@@ -94,6 +94,7 @@ export function TransactionForm({
     onOpenChange(open);
   };
 
+  // TODO: Change user_id to be dynamic
   const onSubmit = async (values: SignInFormData) => {
     mutate({
       amount: values.amount,
@@ -101,7 +102,7 @@ export function TransactionForm({
       note: values.note,
       transaction_date: combineDateAndTime(values.date as Date, values.time),
       type: values.type,
-      user_id: "31d9fb33-835e-4dc5-8a01-05df3309ab14",
+      user_id: "22391e64-0451-40ad-bd27-e28dc75c5c74",
     });
 
     onOpenChange(!isOpen);
@@ -249,9 +250,15 @@ export function TransactionForm({
           </div>
           <DialogFooter className="mt-8 flex flex-row">
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline" className="hover:cursor-pointer">
+                Cancel
+              </Button>
             </DialogClose>
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="hover:cursor-pointer"
+            >
               {isPending ? <Loader2 className="animate-spin" /> : null}
               {isPending ? "Saving..." : "Save Transaction"}
             </Button>

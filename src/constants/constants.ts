@@ -13,6 +13,9 @@ import {
   BriefcaseBusiness,
 } from "lucide-react";
 
+/**
+ *  Categories
+ */
 export type CategoryOption = {
   label: string;
   value: string;
@@ -118,3 +121,7 @@ export const allCategoriesRecord: Record<string, CategoryOption> = [
   },
   {} as Record<string, CategoryOption>,
 );
+
+/**
+ *  Currencies
+ */

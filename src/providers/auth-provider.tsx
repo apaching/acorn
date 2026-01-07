@@ -27,13 +27,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userPreferences, setUserPreferences] = useState<UserPreference | null>(null);
 
   async function signUp(formData: SignUpFormData) {
-    const { error } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
       
     });
 
-    if (error) throw error;    
+    if (signUpError) throw signUpError;    
+
+    const profileInsert = await supabase 
+      .from("user_profiles")
+      .insert({
+        user_id: data.user?.id,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+      })
+      
+
+    const  preferencesInsert = await supabase
+      .from("user_preferences")
+      .insert({
+        user_id: data.user?.id,
+        currency: "PHP",
+        color_theme: "green",
+        mode_theme: "system"
+      })
+
+
+    const [profileResult, preferencesResult] = await Promise.all([profileInsert, preferencesInsert]);
+
+    if (profileResult.error) throw profileResult.error;
+    if (preferencesResult.error) throw preferencesResult.error;
   }
 
   async function signIn(formData: SignInFormData) {
@@ -43,7 +67,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (error) throw error;
-
   }
 
   async function signOut() {

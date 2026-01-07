@@ -16,6 +16,7 @@ export default function useTransaction() {
     return supabase;
   }, []);
 
+  // TODO: Change user_id to be dynamic
   const listTransactions = () => {
     return useQuery({
       queryKey: ["transactions"],
@@ -25,7 +26,7 @@ export default function useTransaction() {
         const { data, error } = await supabaseClient
           .from("transactions")
           .select("*")
-          .eq("user_id", "31d9fb33-835e-4dc5-8a01-05df3309ab14")
+          .eq("user_id", "22391e64-0451-40ad-bd27-e28dc75c5c74")
           .order("transaction_date", { ascending: false });
 
         if (error) throw error;
@@ -80,10 +81,6 @@ export default function useTransaction() {
       onSettled: () => {
         queryClient.invalidateQueries({ queryKey: ["transactions"] });
       },
-
-      // onSuccess: () => {
-      //   queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      // },
     });
   };
 
