@@ -14,17 +14,16 @@ import {
   SidebarGroupContent,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { icons, Nut } from "lucide-react";
+import { Nut } from "lucide-react";
 import { Separator } from "./ui/separator";
-import { useRouter } from "next/navigation";
 import { Avatar, AvatarImage } from "./ui/avatar";
-import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
+import { Collapsible } from "./ui/collapsible";
 import { Settings, CreditCard, LayoutDashboard, BarChart3 } from "lucide-react";
 
 export const sidebarItems = [
   {
-    title: "Dashboard",
-    url: "/dashboard",
+    title: "Overview",
+    url: "/dashboard/overview",
     icon: LayoutDashboard,
   },
   {

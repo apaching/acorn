@@ -15,10 +15,20 @@ import React from "react";
 import capitalizeFirstLetter from "@/utils/string-utils";
 
 const routeData: Record<string, { label: string; description: string }> = {
+  overview: {
+    label: "Quick Overview",
+    description:
+      "Get a clear, immediate snapshot of your current finances. See your balance, recent transactions, and a quick summary of your spending habits.",
+  },
   transactions: {
     label: "Transactions",
     description:
       "View and manage all your financial transactions. Track your income, and expenses organized by category.",
+  },
+  analytics: {
+    label: "Analytics",
+    description:
+      "Explore your financial data in depth. Analyze spending patterns, income trends, and category breakdowns to make informed financial decisions.",
   },
 };
 

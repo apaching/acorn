@@ -21,6 +21,7 @@ import { CustomPagination } from "@/components/custom-pagination";
  *  TODO:
  *    - Page size pagination filter
  *    - Filter by date/month, etc.
+ *    - Better UI/UX loading when changing filters, etc.
  */
 
 export default function TransactionsHistoryPage() {
