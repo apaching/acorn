@@ -1,30 +1,54 @@
 "use client";
 
 import { supabase } from "@/utils/supabase/client";
-import { UserPreference, UserProfile } from "@/types/types";
+import type { Session } from "@supabase/supabase-js";
+import { UserPreferences, UserProfile } from "@/types/types";
+import { SignInFormData } from "@/app/auth/signin/signin-form";
 import { SignUpFormData } from "@/app/auth/signup/signup-form";
 import { createContext, Dispatch, useEffect, useState } from "react";
-import { SignInFormData } from "@/app/auth/signin/signin-form";
 
 
 type AuthContextType = {
   userProfile: UserProfile | null;
-  userPreferences: UserPreference | null;
+  userPreferences: UserPreferences | null;
   loading: boolean;
   setLoading: Dispatch<React.SetStateAction<boolean>>
   signUp: (formData: SignUpFormData) => Promise<void>;
   signIn: (formData: SignInFormData) => Promise<void>;
   signOut: () => Promise<void>;
+  session: any;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined,
 );
 
+async function getUserData (userId: string) {
+  const userProfileFetch = await supabase
+    .from("user_profiles")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const userPreferencesFetch = await supabase
+    .from("user_preferences")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const [userProfileData, userPreferencesData] = await Promise.all([userProfileFetch, userPreferencesFetch])
+
+  if (userProfileData.error) throw userProfileData.error;
+  if (userPreferencesData.error) throw userPreferencesData.error;
+
+  return { userProfileData, userPreferencesData };
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState<boolean>(false);
+  const [session, setSession] = useState<Session | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userPreferences, setUserPreferences] = useState<UserPreference | null>(null);
+  const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null);
 
   async function signUp(formData: SignUpFormData) {
     const { data, error: signUpError } = await supabase.auth.signUp({
@@ -75,45 +99,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error;
   }
 
+
   useEffect(() => {
-    async function load() {
-      if (!supabase) return;
+    async function firstLoad() {
+      const { data } = await supabase.auth.getSession()
+
+      if (!data.session) return;
 
       try {
-        setLoading(true);
+        const { userProfileData, userPreferencesData } = 
+          await getUserData(data.session.user.id);
 
-        const { data: authData } = await supabase.auth.getUser();
-        const user = authData.user;
-
-        if (!user) return;
-
-        const { data: userProfileData, error: userProfileDataError } =
-          await supabase
-            .from("user_profiles")
-            .select("*")
-            .eq("user_id", user.id)
-            .maybeSingle();
-
-        const { data: userPreferencesData, error: userPreferencesDataError } =
-          await supabase
-            .from("user_preferences")
-            .select("*")
-            .eq("user_id", user.id)
-            .maybeSingle();
-
-        if (userProfileDataError || userPreferencesDataError) {
-          throw userProfileDataError || userPreferencesDataError;
-        }
-
-        setUserProfile(userProfileData);
-        setUserPreferences(userPreferencesData);
-      } finally {
-        setLoading(false);
+        setSession(data.session)
+        setUserProfile(userProfileData.data);
+        setUserPreferences(userPreferencesData.data);
+      } catch (error) {
+        console.error(error);
       }
     }
 
-    load();
-  }, [supabase]);
+    const { data: { subscription }} = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        if (!session) {
+          setSession(null);
+          setUserProfile(null);
+          setUserPreferences(null);
+
+          return;
+        }
+
+        try {
+          const { userProfileData, userPreferencesData } = await getUserData(session.user.id);
+
+          setSession(session)
+          setUserProfile(userProfileData.data);
+          setUserPreferences(userPreferencesData.data);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    )
+  
+    firstLoad();
+
+    return () => { subscription.unsubscribe() }
+  }, [supabase])
 
   return (
     <AuthContext.Provider
@@ -121,6 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         userProfile,
         userPreferences,
         loading,
+        session,
         setLoading,
         signUp,
         signIn,

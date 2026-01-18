@@ -5,43 +5,78 @@ import {
   incomeCategories,
   transactionTypes,
 } from "@/constants/constants";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DataTable } from "./data-table";
 import { transactionColumns } from "./columns";
 import { Button } from "@/components/ui/button";
 import { PencilLine, Plus } from "lucide-react";
+import { useFormState } from "./form-state-provider";
 import useTransaction from "@/hooks/use-transaction";
 import CustomSelect from "@/components/custom-select";
 import { TransactionForm } from "@/components/transaction-form";
+import { useAuth } from "@/hooks/use-auth";
+import { CustomPagination } from "@/components/custom-pagination";
 
 export default function TransactionsHistoryPage() {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { userProfile } = useAuth();
+  const { isOpen, setIsOpen } = useFormState();
+
   const [transactionType, setTransactionType] = useState("all");
   const [incomeCategory, setIncomeCategory] = useState("all_income");
   const [expenseCategory, setExpenseCategory] = useState("all_expense");
 
+  const [page, setPage] = useState(1);
+
   const { listTransactions } = useTransaction();
-  const { data: transactions, isLoading, isError } = listTransactions();
+
+  const {
+    data: transactions,
+    isLoading,
+
+    isError,
+  } = listTransactions(userProfile?.user_id as string, page);
 
   const handleTypeSelect = (type: string) => {
     setTransactionType(type);
+
+    setIncomeCategory("all_income");
+    setExpenseCategory("all_expense");
   };
 
-  const handleCategorySelect = () => {};
+  const handleCategorySelect = (category: string) => {
+    if (transactionType === "income") {
+      setIncomeCategory(category);
+      setExpenseCategory("all_expense");
+    } else {
+      setIncomeCategory("all_income");
+      setExpenseCategory(category);
+    }
+  };
 
-  useEffect(() => {
-    console.log(transactions);
-  }, [transactions]);
+  const filteredTransactions = transactions?.data.filter((transaction) => {
+    if (transactionType === "all") return true;
 
-  const filteredTransactions =
-    transactionType === "all"
-      ? transactions
-      : transactions?.filter(
-          (transaction) => transaction.type === transactionType,
-        );
+    if (transactionType === "income") {
+      if (incomeCategory === "all_income") {
+        return transaction.type === "income";
+      }
+
+      return transaction.category === incomeCategory;
+    }
+
+    if (transactionType === "expense") {
+      if (expenseCategory === "all_expense") {
+        return transaction.type === "expense";
+      }
+
+      return transaction.category === expenseCategory;
+    }
+
+    return true;
+  });
 
   return (
-    <div className="relative h-full space-y-4 px-4 py-2 sm:py-4">
+    <div className="relative flex h-full flex-col space-y-4 px-4 py-2 sm:py-4">
       <div className="flex flex-row items-center justify-between">
         <div className="flex w-full flex-row space-x-4">
           <div className="flex w-full flex-col space-y-2 sm:max-w-[180px]">
@@ -73,7 +108,7 @@ export default function TransactionsHistoryPage() {
           </div>
         </div>
         <Button
-          onClick={() => setIsOpen((prev) => !prev)}
+          onClick={() => setIsOpen(!isOpen)}
           className="hidden h-8 w-8 rounded-full hover:cursor-pointer sm:flex sm:w-auto sm:rounded-md"
         >
           <Plus />
@@ -83,28 +118,34 @@ export default function TransactionsHistoryPage() {
 
       <DataTable
         isError={isError}
-        isLoading={isLoading}
+        isLoading={isLoading || !userProfile}
         data={filteredTransactions || []}
         columns={transactionColumns}
       />
 
-      {/* PC - Floating Action Button */}
-      <Button
-        onClick={() => setIsOpen((prev) => !prev)}
-        className="absolute right-4 bottom-2 z-50 flex h-10 w-10 rounded-full hover:cursor-pointer sm:hidden"
-      >
-        <PencilLine
-          strokeWidth={2}
-          className="text-primary-foreground h-8 w-8"
+      <div className="mt-auto mb-2 flex w-full items-center justify-center gap-8">
+        <CustomPagination
+          page={page}
+          setPage={setPage}
+          numberOfPages={transactions?.totalPages as number}
         />
-      </Button>
+
+        <Button
+          onClick={() => setIsOpen(!isOpen)}
+          className="h-8 w-8 rounded-full hover:cursor-pointer sm:hidden"
+        >
+          <PencilLine
+            strokeWidth={1.75}
+            className="text-primary-foreground h-4 w-4"
+          />
+        </Button>
+      </div>
 
       <TransactionForm
         isOpen={isOpen}
         onOpenChange={(bool: boolean) => {
           setIsOpen(bool);
         }}
-        onSubmit={() => {}}
       />
     </div>
   );

@@ -45,8 +45,7 @@ export const sidebarItems = [
 ];
 
 export function ApplicationSidebar() {
-  const router = useRouter();
-  const { isMobile, toggleSidebar } = useSidebar();
+  const { isMobile, toggleSidebar, setOpen } = useSidebar();
 
   const handleMobileTabClick = () => {
     isMobile ?? toggleSidebar();

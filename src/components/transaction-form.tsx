@@ -1,6 +1,13 @@
+import {
+  combineDateAndTime,
+  formatDateToTime,
+  parseSupabaseTimestampToDate,
+  parseSupabaseTimestampToTime,
+} from "@/utils/time-utils";
 import { Calendar } from "./ui/calendar";
 import { Textarea } from "./ui/textarea";
 import CustomSelect from "./custom-select";
+import { Transaction } from "@/types/types";
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -14,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import useTransaction from "@/hooks/use-transaction";
 import { Controller, useForm } from "react-hook-form";
 import {
   incomeCategories,
@@ -24,17 +32,15 @@ import { ChevronDownIcon, Loader2 } from "lucide-react";
 import capitalizeFirstLetter from "@/utils/string-utils";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-
-import useTransaction from "@/hooks/use-transaction";
-import { combineDateAndTime } from "@/utils/time-utils";
+import { useFormState } from "@/app/dashboard/transactions/form-state-provider";
+import { useAuth } from "@/hooks/use-auth";
 
 interface TransactionModalProps {
   isOpen: boolean;
   onOpenChange: (bool: boolean) => void;
-  onSubmit: () => void;
 }
 
-export type SignInFormData = {
+export type TransactionFormData = {
   amount: number;
   type: "income" | "expense";
   category: string;
@@ -47,7 +53,20 @@ export function TransactionForm({
   isOpen,
   onOpenChange,
 }: TransactionModalProps) {
+  const { userProfile } = useAuth();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const { transaction: transactionData, setTransaction } = useFormState();
+
+  const now = new Date();
+
+  const emptyDefaults: TransactionFormData = {
+    amount: 0,
+    type: "income",
+    category: "salary",
+    date: now,
+    time: formatDateToTime(now),
+    note: "",
+  };
 
   const {
     reset,
@@ -57,19 +76,13 @@ export function TransactionForm({
     setValue,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignInFormData>({
-    defaultValues: {
-      amount: 0,
-      type: "income",
-      category: "salary",
-      date: undefined,
-      time: "10:30:00",
-      note: "",
-    },
+  } = useForm<TransactionFormData>({
+    defaultValues: emptyDefaults,
   });
 
-  const { createTransaction } = useTransaction();
-  const { mutate, isPending } = createTransaction();
+  const { createTransaction, editTransaction } = useTransaction();
+  const { mutate: create, isPending: isCreating } = createTransaction();
+  const { mutate: edit, isPending: isEditing } = editTransaction();
 
   const typeValue = watch("type");
   const categoryValue = watch("category");
@@ -88,21 +101,38 @@ export function TransactionForm({
 
   const handleFormStateChange = (open: boolean) => {
     if (!open) {
-      reset();
+      reset(emptyDefaults);
+      setTransaction(null);
     }
 
     onOpenChange(open);
   };
 
-  // TODO: Change user_id to be dynamic
-  const onSubmit = async (values: SignInFormData) => {
-    mutate({
+  const onSubmit = async (values: TransactionFormData) => {
+    if (transactionData) {
+      edit({
+        amount: values.amount,
+        category: values.category,
+        note: values.note,
+        transaction_date: combineDateAndTime(values.date as Date, values.time),
+        type: values.type,
+        user_id: userProfile?.user_id,
+        id: transactionData.id,
+      });
+
+      onOpenChange(!isOpen);
+      reset();
+
+      return;
+    }
+
+    create({
       amount: values.amount,
       category: values.category,
       note: values.note,
       transaction_date: combineDateAndTime(values.date as Date, values.time),
       type: values.type,
-      user_id: "22391e64-0451-40ad-bd27-e28dc75c5c74",
+      user_id: userProfile?.user_id,
     });
 
     onOpenChange(!isOpen);
@@ -123,17 +153,36 @@ export function TransactionForm({
     );
   }, [typeValue, setValue]);
 
+  useEffect(() => {
+    if (!transactionData) return;
+
+    reset({
+      amount: transactionData.amount ?? 0,
+      type: transactionData.type ?? "income",
+      category: transactionData.category ?? "salary",
+      date: transactionData.transaction_date
+        ? parseSupabaseTimestampToDate(transactionData.transaction_date)
+        : now,
+      time: transactionData.transaction_date
+        ? parseSupabaseTimestampToTime(transactionData.transaction_date)
+        : formatDateToTime(now),
+      note: transactionData.note ?? "",
+    });
+  }, [transactionData, reset]);
+
   return (
     <Dialog open={isOpen} onOpenChange={handleFormStateChange}>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Add Transaction</DialogTitle>
+            <DialogTitle>
+              {transactionData ? "Edit" : "Add"} Transaction
+            </DialogTitle>
             <DialogDescription>
-              Enter the details for a new financial transaction.
+              Edit the details of this financial transaction.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-6">
+          <div className="mt-6 grid gap-6">
             <div className="grid gap-2">
               <Label>Amount</Label>
               <Input
@@ -256,11 +305,19 @@ export function TransactionForm({
             </DialogClose>
             <Button
               type="submit"
-              disabled={isPending}
+              disabled={isCreating || isEditing}
               className="hover:cursor-pointer"
             >
-              {isPending ? <Loader2 className="animate-spin" /> : null}
-              {isPending ? "Saving..." : "Save Transaction"}
+              {isCreating || isEditing ? (
+                <Loader2 className="animate-spin" />
+              ) : null}
+              {isCreating || isEditing
+                ? transactionData
+                  ? "Editing..."
+                  : "Saving..."
+                : transactionData
+                  ? "Edit Transaction"
+                  : "Save Transaction"}
             </Button>
           </DialogFooter>
         </form>

@@ -16,6 +16,7 @@ import {
   TableHeader,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   data: TData[];
@@ -41,9 +42,19 @@ export function DataTable<TData, Tvalue>({
     getCoreRowModel: getCoreRowModel(),
   });
 
+  if (isLoading)
+    return (
+      <div className="flex flex-col items-center">
+        <Loader2
+          className="text-primary mt-2 size-8 animate-spin"
+          strokeWidth={2.2}
+        />
+      </div>
+    );
+
   return (
-    <div className="relative h-full overflow-x-auto rounded-md">
-      <Table className="table-auto">
+    <div className="flex h-full flex-1 flex-col overflow-x-auto rounded-md">
+      <Table className="flex-1">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -68,7 +79,7 @@ export function DataTable<TData, Tvalue>({
                     }}
                     className={cn(
                       isPinned ? 30 : 0,
-                      isPinned ? "bg-background sticky" : "relative",
+                      isPinned ? "sticky" : "relative",
                     )}
                   >
                     {header.isPlaceholder

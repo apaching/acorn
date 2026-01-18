@@ -2,9 +2,25 @@
 
 import { Transaction } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
+import { useFormState } from "./form-state-provider";
 import { formatDateShort } from "@/utils/time-utils";
+import {
+  Trash2,
+  SquarePen,
+  MoreVertical,
+  ArrowUpRight,
+  ArrowDownLeft,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { allCategoriesRecord } from "@/constants/constants";
-import { ArrowDownLeft, ArrowUpRight, MoreVertical } from "lucide-react";
+import { useEffect } from "react";
+import { TransactionFormData } from "@/components/transaction-form";
+import useTransaction from "@/hooks/use-transaction";
 
 export const transactionColumns: ColumnDef<Transaction>[] = [
   {
@@ -74,9 +90,48 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
   {
     id: "action_buttons",
     cell: ({ row }) => {
+      const { deleteTransaction } = useTransaction();
+      const { setIsOpen, setTransaction } = useFormState();
+      const { mutate, isPending } = deleteTransaction();
+
+      const originalTransaction = row.original;
+
+      function onEditClick() {
+        setIsOpen(true);
+        setTransaction({
+          amount: originalTransaction.amount,
+          category: originalTransaction.category,
+          created_at: originalTransaction.created_at,
+          id: originalTransaction.id,
+          note: originalTransaction.note,
+          transaction_date: originalTransaction.transaction_date,
+          type: originalTransaction.type,
+          updated_at: originalTransaction.updated_at,
+          user_id: originalTransaction.user_id,
+        });
+      }
+
+      function onDeleteClick() {
+        mutate(originalTransaction.id);
+      }
+
       return (
-        <div>
-          <MoreVertical className="text-primary hover:cursor-pointer" />
+        <div className="-white flex flex-row justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="hover:cursor-pointer focus:outline-none">
+              <MoreVertical className="text-primary" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent alignOffset={-95} align="start">
+              <DropdownMenuItem onClick={onEditClick}>
+                <SquarePen />
+                <p>Edit</p>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onDeleteClick}>
+                <Trash2 className="text-destructive" />
+                <p className="text-destructive">Delete</p>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       );
     },

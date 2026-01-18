@@ -1,7 +1,14 @@
 import { useCallback } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { Transaction, TransactionInsert } from "@/types/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
+
+const PAGE_SIZE = 13;
 
 export default function useTransaction() {
   const queryClient = useQueryClient();
@@ -16,22 +23,29 @@ export default function useTransaction() {
     return supabase;
   }, []);
 
-  // TODO: Change user_id to be dynamic
-  const listTransactions = () => {
+  const listTransactions = (userId: string, page: number) => {
     return useQuery({
-      queryKey: ["transactions"],
+      queryKey: ["transactions", userId, page],
+      enabled: !!userId,
+      placeholderData: keepPreviousData,
       queryFn: async () => {
         const supabaseClient = assertClient();
 
-        const { data, error } = await supabaseClient
+        const from = (page - 1) * PAGE_SIZE;
+        const to = from + PAGE_SIZE - 1;
+
+        const { data, error, count } = await supabaseClient
           .from("transactions")
-          .select("*")
-          .eq("user_id", "22391e64-0451-40ad-bd27-e28dc75c5c74")
-          .order("transaction_date", { ascending: false });
+          .select("*", { count: "exact" })
+          .eq("user_id", userId)
+          .order("transaction_date", { ascending: false })
+          .range(from, to);
 
         if (error) throw error;
 
-        return data as Transaction[];
+        const totalPages = count ? Math.ceil(count / PAGE_SIZE) : 0;
+
+        return { data, totalPages };
       },
     });
   };
@@ -84,8 +98,102 @@ export default function useTransaction() {
     });
   };
 
+  const editTransaction = () => {
+    return useMutation({
+      mutationFn: async (transaction: TransactionInsert) => {
+        if (!transaction.id) return;
+
+        const supabaseClient = assertClient();
+
+        const { data, error } = await supabaseClient
+          .from("transactions")
+          .update({
+            amount: transaction.amount,
+            category: transaction.category,
+            note: transaction.note,
+            transaction_date: transaction.transaction_date,
+            type: transaction.type,
+            updated_at: new Date().toISOString(),
+            user_id: transaction.user_id,
+          })
+          .eq("id", transaction.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        return data as Transaction;
+      },
+      onMutate: async (updatedTransaction) => {
+        await queryClient.cancelQueries({ queryKey: ["transactions"] });
+
+        const previousTransactions = queryClient.getQueryData<Transaction[]>([
+          "transactions",
+        ]);
+
+        queryClient.setQueryData<Transaction[]>(["transactions"], (old = []) =>
+          old.map((t) =>
+            t.id === updatedTransaction.id
+              ? { ...t, ...updatedTransaction }
+              : t,
+          ),
+        );
+
+        return { previousTransactions };
+      },
+      onError: (_err, _newTransaction, context) => {
+        queryClient.setQueryData(
+          ["transactions"],
+          context?.previousTransactions,
+        );
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      },
+    });
+  };
+
+  const deleteTransaction = () => {
+    return useMutation({
+      mutationFn: async (transactionId: string) => {
+        if (!transactionId) return;
+
+        const { error } = await supabase
+          .from("transactions")
+          .delete()
+          .eq("id", transactionId);
+
+        if (error) throw error;
+      },
+      onMutate: async (transactionId) => {
+        await queryClient.cancelQueries({ queryKey: ["transactions"] });
+
+        const previousTransactions = queryClient.getQueryData<Transaction[]>([
+          "transactions",
+        ]);
+
+        queryClient.setQueryData<Transaction[]>(["transactions"], (old = []) =>
+          old.filter((t) => t.id != transactionId),
+        );
+
+        return { previousTransactions };
+      },
+      onError: (_err, _newTransaction, context) => {
+        queryClient.setQueryData(
+          ["transactions"],
+          context?.previousTransactions,
+        );
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      },
+    });
+  };
+
   return {
     listTransactions,
     createTransaction,
+    editTransaction,
+    deleteTransaction,
   };
 }
