@@ -17,6 +17,12 @@ import { TransactionForm } from "@/components/transaction-form";
 import { useAuth } from "@/hooks/use-auth";
 import { CustomPagination } from "@/components/custom-pagination";
 
+/**
+ *  TODO:
+ *    - Page size pagination filter
+ *    - Filter by date/month, etc.
+ */
+
 export default function TransactionsHistoryPage() {
   const { userProfile } = useAuth();
   const { isOpen, setIsOpen } = useFormState();
