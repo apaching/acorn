@@ -128,3 +128,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+.recharts-wrapper *:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}

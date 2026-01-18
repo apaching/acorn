@@ -18,7 +18,7 @@ const routeData: Record<string, { label: string; description: string }> = {
   overview: {
     label: "Quick Overview",
     description:
-      "Get a clear, immediate snapshot of your current finances. See your balance, recent transactions, and a quick summary of your spending habits.",
+      "Get a clear snapshot of what’s happening with your finances this month. View your balance, recent transactions, and a summary of your income and expenses.",
   },
   transactions: {
     label: "Transactions",

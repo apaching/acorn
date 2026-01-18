@@ -78,3 +78,33 @@ export function formatDateToTime(date: Date) {
   const minutes = String(date.getMinutes()).padStart(2, "0");
   return `${hours}:${minutes}`;
 }
+
+type MonthOption = "number" | "name";
+
+export function getCurrentMonthYear(option: MonthOption = "number") {
+  const now = new Date();
+  const monthNumber = now.getMonth() + 1;
+  const year = now.getFullYear();
+
+  let month: number | string = monthNumber;
+
+  if (option === "name") {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    month = months[monthNumber - 1];
+  }
+
+  return { month, year };
+}
