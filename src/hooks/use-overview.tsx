@@ -29,8 +29,8 @@ export default function useOverview() {
       queryFn: async () => {
         const supabaseClient = assertClient();
 
-        const startOfMonth = new Date(Date.UTC(year, month - 1, 1));
-        const startOfNextMonth = new Date(Date.UTC(year, month, 1));
+        const startOfMonth = new Date(Date.UTC(year, (month as number) - 1, 1));
+        const startOfNextMonth = new Date(Date.UTC(year, month as number, 1));
 
         const fetchByType = async (type: "income" | "expense") => {
           const { data, error } = await supabaseClient
