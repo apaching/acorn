@@ -8,7 +8,7 @@ import {
   keepPreviousData,
 } from "@tanstack/react-query";
 
-const PAGE_SIZE = 13;
+const PAGE_SIZE = 15;
 
 export default function useTransaction() {
   const queryClient = useQueryClient();
