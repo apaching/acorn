@@ -35,12 +35,23 @@ export default function TransactionsHistoryPage() {
 
   const { listTransactions } = useTransaction();
 
+  const category =
+    transactionType === "income"
+      ? incomeCategory
+      : transactionType === "expense"
+        ? expenseCategory
+        : undefined;
+
   const {
     data: transactions,
     isLoading,
-
     isError,
-  } = listTransactions(userProfile?.user_id as string, page);
+  } = listTransactions(
+    userProfile?.user_id as string,
+    page,
+    transactionType === "all" ? undefined : transactionType,
+    category && !category.includes("all") ? category : undefined,
+  );
 
   const handleTypeSelect = (type: string) => {
     setTransactionType(type);
@@ -59,27 +70,27 @@ export default function TransactionsHistoryPage() {
     }
   };
 
-  const filteredTransactions = transactions?.data.filter((transaction) => {
-    if (transactionType === "all") return true;
+  // const filteredTransactions = transactions?.data.filter((transaction) => {
+  //   if (transactionType === "all") return true;
 
-    if (transactionType === "income") {
-      if (incomeCategory === "all_income") {
-        return transaction.type === "income";
-      }
+  //   if (transactionType === "income") {
+  //     if (incomeCategory === "all_income") {
+  //       return transaction.type === "income";
+  //     }
 
-      return transaction.category === incomeCategory;
-    }
+  //     return transaction.category === incomeCategory;
+  //   }
 
-    if (transactionType === "expense") {
-      if (expenseCategory === "all_expense") {
-        return transaction.type === "expense";
-      }
+  //   if (transactionType === "expense") {
+  //     if (expenseCategory === "all_expense") {
+  //       return transaction.type === "expense";
+  //     }
 
-      return transaction.category === expenseCategory;
-    }
+  //     return transaction.category === expenseCategory;
+  //   }
 
-    return true;
-  });
+  //   return true;
+  // });
 
   return (
     <div className="relative flex h-full flex-col space-y-4 px-4 py-2 sm:py-4">
@@ -125,7 +136,7 @@ export default function TransactionsHistoryPage() {
       <DataTable
         isError={isError}
         isLoading={isLoading || !userProfile}
-        data={filteredTransactions || []}
+        data={transactions?.data || []}
         columns={transactionColumns}
       />
 

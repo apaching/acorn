@@ -23,9 +23,14 @@ export default function useTransaction() {
     return supabase;
   }, []);
 
-  const listTransactions = (userId: string, page: number) => {
+  const listTransactions = (
+    userId: string,
+    page: number,
+    transactionType?: string,
+    category?: string,
+  ) => {
     return useQuery({
-      queryKey: ["transactions", userId, page],
+      queryKey: ["transactions", userId, page, transactionType, category],
       enabled: !!userId,
       placeholderData: keepPreviousData,
       queryFn: async () => {
@@ -34,13 +39,21 @@ export default function useTransaction() {
         const from = (page - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE - 1;
 
-        const { data, error, count } = await supabaseClient
+        let query = supabaseClient
           .from("transactions")
           .select("*", { count: "exact" })
           .eq("user_id", userId)
-          .order("transaction_date", { ascending: false })
-          .range(from, to);
+          .order("transaction_date", { ascending: false });
 
+        if (transactionType && transactionType !== "all") {
+          query = query.eq("type", transactionType);
+
+          if (category && !category.includes("all")) {
+            query = query.eq("category", category);
+          }
+        }
+
+        const { data, error, count } = await query.range(from, to);
         if (error) throw error;
 
         const totalPages = count ? Math.ceil(count / PAGE_SIZE) : 0;
