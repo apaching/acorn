@@ -1,6 +1,5 @@
 "use client";
 
-import ThemeToggle from "./theme-toggle";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,10 +7,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
+import React from "react";
 import { Separator } from "./ui/separator";
 import { usePathname } from "next/navigation";
 import { SidebarTrigger } from "./ui/sidebar";
-import React from "react";
 import capitalizeFirstLetter from "@/utils/string-utils";
 
 const routeData: Record<string, { label: string; description: string }> = {
