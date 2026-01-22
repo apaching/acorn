@@ -1,6 +1,6 @@
 "use client";
 
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 interface CurrentMonthPieChartProps {
   data: { name: string; value: number }[];
@@ -10,31 +10,66 @@ export default function CurrentMonthPieChart({
   data,
 }: CurrentMonthPieChartProps) {
   return (
-    <PieChart responsive className="h-full w-full">
-      <Pie
-        data={data}
-        cx="50%" // X position of center
-        cy="50%" // Y position of center
-        innerRadius={50} // For a donut shape
-        outerRadius={100} // Outer radius of the pie
-        paddingAngle={5} // Space between slices
-        dataKey="value" // Value to be used for slices
-        label // Show labels on slices
-      >
-        {data.map((entry, index) => (
-          <Cell
-            key={`cell-${index}`}
-            fill={
-              entry.name.toLowerCase() === "income"
-                ? "var(--income)"
-                : "var(--expense)"
-            }
-          />
-        ))}
-      </Pie>
-      <Legend
-        itemSorter={(item) => (item.payload as { index?: number })?.index ?? 0}
-      />
-    </PieChart>
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart>
+        <Pie
+          data={data}
+          cx="50%"
+          cy="50%"
+          innerRadius="55%"
+          outerRadius="90%"
+          paddingAngle={5}
+          dataKey="value"
+          label
+        >
+          {data.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={
+                entry.name.toLowerCase() === "income"
+                  ? "var(--income)"
+                  : "var(--expense)"
+              }
+            />
+          ))}
+        </Pie>
+
+         <Tooltip />
+        <Legend /> 
+      </PieChart>
+    </ResponsiveContainer>
   );
 }
+
+
+/**
+can do className 
+
+<Legend
+  wrapperStyle={{
+    fontSize: 12,
+    lineHeight: "16px",
+    paddingTop: 8,
+  }}
+  icnSize={10}
+  height={32}
+/>
+ 
+
+<Legend
+  content={({ payload }) => (
+    <ul className="flex gap-4 text-xs">
+      {payload?.map((entry, index) => (
+        <li key={index} className="flex items-center gap-1">
+          <span
+            className="h-2 w-2 rounded-full"
+            style={{ backgroundColor: entry.color }}
+          />
+          {entry.value}
+        </li>
+      ))}
+    </ul>
+  )}
+/>
+
+ */
