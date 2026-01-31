@@ -1,14 +1,19 @@
 "use client";
 
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import {
+  Pie,
+  Cell,
+  Legend,
+  Tooltip,
+  PieChart,
+  ResponsiveContainer,
+} from "recharts";
 
-interface CurrentMonthPieChartProps {
+interface CustomPieChartProps {
   data: { name: string; value: number }[];
 }
 
-export default function CurrentMonthPieChart({
-  data,
-}: CurrentMonthPieChartProps) {
+export default function CustomPieChart({ data }: CustomPieChartProps) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <PieChart>
@@ -34,13 +39,12 @@ export default function CurrentMonthPieChart({
           ))}
         </Pie>
 
-         <Tooltip />
-        <Legend /> 
+        <Tooltip />
+        <Legend />
       </PieChart>
     </ResponsiveContainer>
   );
 }
-
 
 /**
 can do className 

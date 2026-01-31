@@ -2,24 +2,60 @@
 
 import { useAuth } from "@/hooks/use-auth";
 import useOverview from "@/hooks/use-overview";
-import CurrentMonthPieChart from "@/components/current-month-pie";
 import { getCurrentMonthYear } from "@/utils/time-utils";
+import CustomPieChart from "@/components/custom-pie-chart";
 
 export default function OverviewPage() {
   const { userProfile } = useAuth();
-  const { getCurrentMonthSummary } = useOverview();
+  const {
+    getCurrentMonthSummary,
+    getMonthlyIncomeByCategory,
+    getMonthlyExpenseByCategory,
+  } = useOverview();
 
   const {
     data: currentMonthSummary,
-    isLoading: currentMonthIncomeLoading,
-    isError: currentMonthIncomeError,
+    isLoading: currentMonthSummaryLoading,
+    isError: currentMonthSummaryError,
   } = getCurrentMonthSummary(userProfile?.user_id as string);
 
-  const data = [
+  const {
+    data: monthlyIncomeByCategory,
+    isLoading: monthlyIncomeByCategoryLoading,
+    isError: monthlyIncomeByCategoryError,
+  } = getMonthlyIncomeByCategory(userProfile?.user_id as string);
+
+  const {
+    data: monthlyExpensebyCategory,
+    isLoading: monthlyExpenseByCategoryyLoading,
+    isError: monthlyExpenseByCategoryError,
+  } = getMonthlyExpenseByCategory(userProfile?.user_id as string);
+
+  const currentMonthSummaryData = [
     { name: "Income", value: currentMonthSummary?.income ?? 0, index: 0 },
     { name: "Expense", value: currentMonthSummary?.expense ?? 0, index: 1 },
+  ].filter((category) => category.value != 0);
+
+  const monthlyIncomeByCategoryData = [
+    { name: "Salary", value: monthlyIncomeByCategory?.salary ?? 0 },
+    { name: "Allowance", value: monthlyIncomeByCategory?.allowance ?? 0 },
+    { name: "Side Income", value: monthlyIncomeByCategory?.side_income ?? 0 },
+    { name: "Business", value: monthlyIncomeByCategory?.business ?? 0 },
+    { name: "Others", value: monthlyIncomeByCategory?.income_others ?? 0 },
+  ].filter((category) => category.value != 0);
+
+  // prettier-ignore
+  const monthlyExpenseByCategoryData = [
+    { name: "Food", value: monthlyExpensebyCategory?.foods_and_drinks ?? 0 },
+    { name: "Transport", value:  monthlyExpensebyCategory?.foods_and_drinks ?? 0},
+    { name: "Groceries", value:  monthlyExpensebyCategory?.foods_and_drinks ?? 0},
+    { name: "Bills", value:  monthlyExpensebyCategory?.foods_and_drinks ?? 0},
+    { name: "Luxury", value:  monthlyExpensebyCategory?.foods_and_drinks ?? 0},
+    { name: "Healthcare", value:  monthlyExpensebyCategory?.foods_and_drinks ?? 0},
+    { name: "Others", value:  monthlyExpensebyCategory?.foods_and_drinks ?? 0},
   ];
 
+  // TODO: Display the month somehow
   const { month } = getCurrentMonthYear("name");
 
   return (
@@ -27,24 +63,24 @@ export default function OverviewPage() {
       <div className="-mx-4 flex gap-4 overflow-x-auto px-4">
         <div className="flex w-full min-w-[360px] flex-col gap-2">
           <p className="text-primary text-lg font-medium">
-            Income vs. Expenses for <span className="">{month}</span>
+            Income vs. Expenses
           </p>
           <div className="bg-card border-border flex h-72 w-full flex-col rounded-2xl border p-4">
-            <CurrentMonthPieChart data={data} />
+            <CustomPieChart data={currentMonthSummaryData} />
           </div>
         </div>
-
         <div className="flex w-full min-w-[360px] flex-col gap-2">
-          <p className="text-primary text-lg font-medium">Income vs Expense</p>
+          <p className="text-primary text-lg font-medium">Income by Category</p>
           <div className="bg-card border-border flex h-72 w-full flex-col rounded-2xl border p-4">
-            <CurrentMonthPieChart data={data} />
+            <CustomPieChart data={monthlyIncomeByCategoryData} />
           </div>
         </div>
-
         <div className="flex w-full min-w-[360px] flex-col gap-2">
-          <p className="text-primary text-lg font-medium">Income vs Expense</p>
+          <p className="text-primary text-lg font-medium">
+            Expense by Category
+          </p>
           <div className="bg-card border-border flex h-72 w-full flex-col rounded-2xl border p-4">
-            <CurrentMonthPieChart data={data} />
+            <CustomPieChart data={monthlyExpenseByCategoryData} />
           </div>
         </div>
       </div>
