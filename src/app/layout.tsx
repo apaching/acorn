@@ -1,0 +1,46 @@
+import "./globals.css";
+import type { Metadata } from "next";
+import { Toaster } from "@/components/ui/sonner";
+import { Geist, Geist_Mono } from "next/font/google";
+import ThemeProvider from "@/providers/theme-provider";
+import ClientProvider from "@/providers/client-provider";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Acorn",
+  description: "Acorn Expense Tracker",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <ThemeProvider
+          attribute="class"
+          // defaultTheme="system"
+          // enableSystem
+          forcedTheme="dark"
+          disableTransitionOnChange
+        >
+          <ClientProvider>{children}</ClientProvider>
+          <Toaster richColors position="top-center" />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
